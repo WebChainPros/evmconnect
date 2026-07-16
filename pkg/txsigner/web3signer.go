@@ -31,10 +31,10 @@ import (
 	"time"
 
 	btcec "github.com/btcsuite/btcd/btcec/v2"
-	"github.com/hyperledger/firefly-signer/pkg/ethsigner"
-	"github.com/hyperledger/firefly-signer/pkg/ethtypes"
-	"github.com/hyperledger/firefly-signer/pkg/secp256k1"
-	"github.com/hyperledger/firefly-transaction-manager/pkg/ffcapi"
+	"github.com/hyperledger-firefly/signer/pkg/ethsigner"
+	"github.com/hyperledger-firefly/signer/pkg/ethtypes"
+	"github.com/hyperledger-firefly/signer/pkg/secp256k1"
+	"github.com/hyperledger-firefly/transaction-manager/pkg/ffcapi"
 )
 
 type web3SignerRequest struct {
