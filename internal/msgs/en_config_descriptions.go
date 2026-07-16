@@ -52,4 +52,8 @@ var (
 	_ = ffc("config.connector.maxAsyncBlockFetchConcurrency", "Maximum concurrency when using asynchronous block downloading (minium 1)", i18n.IntType)
 	_ = ffc("config.connector.useGetBlockReceipts", "When true, the eth_getBlockReceipts call is available for this connector to use", i18n.BooleanType)
 	_ = ffc("config.connector.chainTrackingMode", "Tracking mode for connector block progression. light: fetches head block numbers only, does not download block details, disables block listener support, and confirmation results include only the confirmation count. full: fetches head block numbers and block details, maintains an in-memory partial chain, enables block listener support, and confirmation results include both confirmation count and block details.", "`light` or `full`")
+	_ = ffc("config.connector.txSigner.enabled", "When true, enables transaction signing inside evmconnect", i18n.BooleanType)
+	_ = ffc("config.connector.txSigner.type", "Type of transaction signer ('memory' or 'web3signer')", "string")
+	_ = ffc("config.connector.txSigner.privateKeys", "Array of hex-encoded private keys used for memory signing", "string_array")
+	_ = ffc("config.connector.txSigner.web3signer.url", "Web3Signer REST API endpoint URL used for signing", "string")
 )

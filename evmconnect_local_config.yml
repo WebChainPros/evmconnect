@@ -1,0 +1,26 @@
+log:
+  level: debug
+connector:
+  url: http://127.0.0.1:8545           # 1. 실제 Geth/Besu/Anvil 노드 주소
+  txSigner:
+    enabled: true                      # 2. 서명기 활성화
+    type: memory                       # 3. memory 타입 서명기 선택
+    privateKeys:                       # 4. 테스트용 plain private key 입력
+      - "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+persistence:
+  leveldb:
+    path: ./.leveldb
+ffcore:
+  url: http://127.0.0.1:5101
+  namespaces:
+    - default
+confirmations:
+  required: 0
+transactions:
+  handler:
+    name: simple
+    simple:
+      fixedGasPrice: 0
+      gasOracle:
+        mode: fixed
+

@@ -51,6 +51,11 @@ const (
 	WebSocketsEnabled             = "ws.enabled"
 	MaxAsyncBlockFetchConcurrency = "maxAsyncBlockFetchConcurrency"
 	UseGetBlockReceipts           = "useGetBlockReceipts"
+
+	ConfigTxSignerEnabled         = "txSigner.enabled"
+	ConfigTxSignerType            = "txSigner.type"
+	ConfigTxSignerPrivateKeys     = "txSigner.privateKeys"
+	ConfigWeb3SignerURL           = "txSigner.web3signer.url"
 )
 
 const (
@@ -97,4 +102,9 @@ func InitConfig(conf config.Section) {
 	// FireFly Common default for retry enabled is false,
 	// but we want to enable it by default
 	conf.SetDefault(RetryEnabled, true)
+
+	conf.AddKnownKey(ConfigTxSignerEnabled, false)
+	conf.AddKnownKey(ConfigTxSignerType, "memory")
+	conf.AddKnownKey(ConfigTxSignerPrivateKeys, []string{})
+	conf.AddKnownKey(ConfigWeb3SignerURL, "")
 }

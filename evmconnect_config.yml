@@ -1,10 +1,15 @@
 log:
   level: debug
 connector:
-  url: http://127.0.0.1:5100
+  url: http://127.0.0.1:8545
+  txSigner:
+    enabled: true
+    type: web3signer                  # 1. web3signer 타입 선택
+    web3signer:
+      url: http://127.0.0.1:9000      # 2. Web3Signer REST API 주소 입력
 persistence:
   leveldb:
-    # path: ./.leveldb // SET BY ENV VARIABLE
+    path: ./.leveldb
 ffcore:
   url: http://127.0.0.1:5101
   namespaces:

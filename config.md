@@ -106,6 +106,15 @@
 |checkpointBlockGap|The number of blocks at the head of the chain that should be considered unstable (could be dropped from the canonical chain after a re-org). Unless events with a full set of confirmations are detected, the restart checkpoint will this many blocks behind the chain head.|`int`|`50`
 |filterPollingInterval|The interval between polling calls to a filter, when checking for newly arrived events|[`time.Duration`](https://pkg.go.dev/time#Duration)|`1s`
 
+## connector.txSigner
+
+|Key|Description|Type|Default Value|
+|---|-----------|----|-------------|
+|enabled|When true, enables transaction signing inside evmconnect|`boolean`|`false`
+|type|Type of transaction signer ('memory' or 'web3signer')|`string`|`memory`
+|privateKeys|Array of hex-encoded private keys used for memory signing|string_array|`[]`
+|web3signer.url|Web3Signer REST API endpoint URL used for signing|`string`|`""`
+
 ## connector.proxy
 
 |Key|Description|Type|Default Value|
