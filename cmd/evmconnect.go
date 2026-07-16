@@ -27,8 +27,10 @@ import (
 	"github.com/hyperledger-firefly/common/pkg/i18n"
 	"github.com/hyperledger-firefly/common/pkg/log"
 	"github.com/hyperledger-firefly/evmconnect/internal/ethereum"
+	"github.com/hyperledger-firefly/evmconnect/pkg/txsigner"
 	fftmcmd "github.com/hyperledger-firefly/transaction-manager/cmd"
 	"github.com/hyperledger-firefly/transaction-manager/pkg/fftm"
+	"github.com/hyperledger-firefly/transaction-manager/pkg/signer"
 	txhandlerfactory "github.com/hyperledger-firefly/transaction-manager/pkg/txhandler/registry"
 	"github.com/hyperledger-firefly/transaction-manager/pkg/txhandler/simple"
 	"github.com/sirupsen/logrus"
@@ -105,7 +107,26 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	m, err := fftm.NewManager(ctx, c)
+	var txSigner signer.TransactionSigner
+	if connectorConfig.GetBool(ethereum.ConfigTxSignerEnabled) {
+		signerType := connectorConfig.GetString(ethereum.ConfigTxSignerType)
+		if signerType == "web3signer" {
+			web3signerURL := connectorConfig.GetString(ethereum.ConfigWeb3SignerURL)
+			txSigner, err = txsigner.NewWeb3SignerClient(web3signerURL, c)
+			if err != nil {
+				return fmt.Errorf("failed to initialize Web3Signer client: %w", err)
+			}
+			log.L(ctx).Infof("TransactionSigner (Web3Signer) initialized with URL: %s", web3signerURL)
+		} else {
+			pks := connectorConfig.GetStringSlice(ethereum.ConfigTxSignerPrivateKeys)
+			txSigner, err = txsigner.NewEthMemorySigner(pks, c)
+			if err != nil {
+				return fmt.Errorf("failed to initialize local memory signer: %w", err)
+			}
+			log.L(ctx).Infof("TransactionSigner (Memory) initialized with %d keys", len(pks))
+		}
+	}
+	m, err := fftm.NewManagerWithSigner(ctx, c, txSigner)
 	if err != nil {
 		return err
 	}

@@ -119,6 +119,15 @@
 |---|-----------|----|-------------|
 |cidrDenylist|A list of CIDR ranges to which outbound connections are blocked, as a core SSRF mitigation. Empty by default.|`[]string`|`<nil>`
 
+## connector.txSigner
+
+|Key|Description|Type|Default Value|
+|---|-----------|----|-------------|
+|enabled|When true, enables transaction signing inside evmconnect|`boolean`|`false`
+|type|Type of transaction signer ('memory' or 'web3signer')|`string`|`memory`
+|privateKeys|Array of hex-encoded private keys used for memory signing|string_array|`[]`
+|web3signer.url|Web3Signer REST API endpoint URL used for signing|`string`|`""`
+
 ## connector.proxy
 
 |Key|Description|Type|Default Value|
