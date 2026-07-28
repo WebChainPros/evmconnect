@@ -402,6 +402,12 @@
 |maxIdleConns|The maximum number of idle connections to the database|`int`|`<nil>`
 |url|The PostgreSQL connection string for the database|`string`|`<nil>`
 
+## persistence.postgres.histograms
+
+|Key|Description|Type|Default Value|
+|---|-----------|----|-------------|
+|maxChartRows|The maximum rows to fetch for each histogram bucket|`int`|`100`
+
 ## persistence.postgres.migrations
 
 |Key|Description|Type|Default Value|
