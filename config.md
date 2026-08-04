@@ -142,6 +142,13 @@
 |initialDelay|Initial delay for retrying query requests to the RPC endpoint, applicable to all the query loops|[`time.Duration`](https://pkg.go.dev/time#Duration)|`100ms`
 |maxDelay|Maximum delay for between each query request retry to the RPC endpoint, applicable to all the query loops|[`time.Duration`](https://pkg.go.dev/time#Duration)|`30s`
 
+## connector.receiptCache
+
+|Key|Description|Type|Default Value|
+|---|-----------|----|-------------|
+|enabled|When true, transaction receipts fetched during canonical chain build are cached in memory for reuse|`boolean`|`false`
+|size|Maximum of transaction receipts to hold in the receipt cache|`int`|`5000`
+
 ## connector.retry
 
 |Key|Description|Type|Default Value|
@@ -403,6 +410,12 @@
 |maxConns|Maximum connections to the database|`int`|`50`
 |maxIdleConns|The maximum number of idle connections to the database|`int`|`<nil>`
 |url|The PostgreSQL connection string for the database|`string`|`<nil>`
+
+## persistence.postgres.histograms
+
+|Key|Description|Type|Default Value|
+|---|-----------|----|-------------|
+|maxChartRows|The maximum rows to fetch for each histogram bucket|`int`|`100`
 
 ## persistence.postgres.migrations
 
