@@ -23,7 +23,7 @@ jobs:
       # (go.mod의 replace directive: ../firefly-transaction-manager)
       - uses: actions/checkout@v4
         with:
-          repository: hyperledger/firefly-transaction-manager
+          repository: webchainpro-cpu/transaction-manager
           path: firefly-transaction-manager
 
       - name: Set up QEMU
