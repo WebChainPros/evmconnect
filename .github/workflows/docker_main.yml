@@ -12,9 +12,18 @@ jobs:
       contents: read
       packages: write
     steps:
+      # firefly-evmconnect를 서브디렉토리로 체크아웃
       - uses: actions/checkout@v4
         with:
+          path: firefly-evmconnect
           fetch-depth: 0
+
+      # firefly-transaction-manager를 형제 디렉토리로 체크아웃
+      # (go.mod의 replace directive: ../firefly-transaction-manager)
+      - uses: actions/checkout@v4
+        with:
+          repository: hyperledger/firefly-transaction-manager
+          path: firefly-transaction-manager
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -42,8 +51,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./
-          file: ./Dockerfile
+          # 빌드 컨텍스트: workspace 루트 (두 레포 디렉토리가 모두 보임)
+          context: .
+          file: ./firefly-evmconnect/Dockerfile.custom
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           platforms: linux/amd64
