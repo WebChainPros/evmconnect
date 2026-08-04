@@ -12,7 +12,7 @@ RUN mkdir /.cache \
     && chgrp -R 0 /.cache \
     && chmod -R g+rwX /.cache
 USER 1001
-RUN make build
+RUN go mod tidy && make build
 
 # Copy the migrations from FFTM down into our local migrations directory
 RUN DB_MIGRATIONS_DIR=$(go list -f '{{.Dir}}' github.com/hyperledger-firefly/transaction-manager/pkg/ffcapi | sed 's|pkg/ffcapi|db|') \
