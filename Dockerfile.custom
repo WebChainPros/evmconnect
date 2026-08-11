@@ -24,6 +24,7 @@ RUN addgroup -g 1001 evmgroup && adduser -D -u 1001 -G evmgroup evmuser
 RUN chgrp -R 0 /evmconnect \
     && chmod -R g+rwX /evmconnect
 RUN apk add --no-cache curl jq
+ENV TZ=Asia/Seoul
 RUN curl -sL "https://github.com/golang-migrate/migrate/releases/download/$(curl -sL https://api.github.com/repos/golang-migrate/migrate/releases/latest | jq -r '.tag_name')/migrate.linux-amd64.tar.gz" | tar xz \
     && chmod +x ./migrate \
     && mv ./migrate /usr/bin/migrate
