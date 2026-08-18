@@ -119,15 +119,6 @@
 |---|-----------|----|-------------|
 |cidrDenylist|A list of CIDR ranges to which outbound connections are blocked, as a core SSRF mitigation. Empty by default.|`[]string`|`<nil>`
 
-## connector.txSigner
-
-|Key|Description|Type|Default Value|
-|---|-----------|----|-------------|
-|enabled|When true, enables transaction signing inside evmconnect|`boolean`|`false`
-|type|Type of transaction signer ('memory' or 'web3signer')|`string`|`memory`
-|privateKeys|Array of hex-encoded private keys used for memory signing|string_array|`[]`
-|web3signer.url|Web3Signer REST API endpoint URL used for signing|`string`|`""`
-
 ## connector.proxy
 
 |Key|Description|Type|Default Value|
@@ -183,6 +174,20 @@
 |key|The TLS certificate key in PEM format (this option is ignored if keyFile is also set)|`string`|`<nil>`
 |keyFile|The path to the private key file for TLS on this API|`string`|`<nil>`
 |requiredDNAttributes|A set of required subject DN attributes. Each entry is a regular expression, and the subject certificate must have a matching attribute of the specified type (CN, C, O, OU, ST, L, STREET, POSTALCODE, SERIALNUMBER are valid attributes)|`map[string]string`|`<nil>`
+
+## connector.txSigner
+
+|Key|Description|Type|Default Value|
+|---|-----------|----|-------------|
+|enabled|When true, enables transaction signing inside evmconnect|`boolean`|`false`
+|privateKeys|Array of hex-encoded private keys used for memory signing|string_array|`[]`
+|type|Type of transaction signer ('memory' or 'web3signer')|string|`memory`
+
+## connector.txSigner.web3signer
+
+|Key|Description|Type|Default Value|
+|---|-----------|----|-------------|
+|url|Web3Signer REST API endpoint URL used for signing|string|``
 
 ## connector.ws
 

@@ -58,4 +58,6 @@ var (
 	_ = ffc("config.connector.txSigner.type", "Type of transaction signer ('memory' or 'web3signer')", "string")
 	_ = ffc("config.connector.txSigner.privateKeys", "Array of hex-encoded private keys used for memory signing", "string_array")
 	_ = ffc("config.connector.txSigner.web3signer.url", "Web3Signer REST API endpoint URL used for signing", "string")
+
+	_ = ffc("config.persistence.postgres.histograms.maxChartRows", "The maximum rows to fetch for each histogram bucket", i18n.IntType)
 )
