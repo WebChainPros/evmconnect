@@ -20,10 +20,9 @@ jobs:
           fetch-depth: 0
 
       # firefly-transaction-manager를 형제 디렉토리로 체크아웃
-      # (go.mod의 replace directive: ../firefly-transaction-manager)
       - uses: actions/checkout@v4
         with:
-          repository: webchainpro-cpu/transaction-manager
+          repository: WebChainPros/transaction-manager
           ref: custom-1.5
           path: firefly-transaction-manager
 
@@ -44,29 +43,33 @@ jobs:
       - name: Set build tag
         id: build_tag_generator
         run: |
+          IMAGE_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           RELEASE_TAG=$(curl https://api.github.com/repos/${{ github.repository }}/releases/latest -s | jq .tag_name -r)
+          if [ "$RELEASE_TAG" = "null" ] || [ -z "$RELEASE_TAG" ]; then
+            RELEASE_TAG="v1.5.0"
+          fi
           BUILD_TAG=$RELEASE_TAG-$(date +"%Y%m%d")-$GITHUB_RUN_NUMBER
           BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
           echo "BUILD_TAG=$BUILD_TAG" >> $GITHUB_OUTPUT
-          echo "name=BUILD_DATE=$BUILD_DATE" >> $GITHUB_OUTPUT
+          echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_OUTPUT
 
       - name: Build and push
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
-          # 빌드 컨텍스트: workspace 루트 (두 레포 디렉토리가 모두 보임)
           context: .
           file: ./firefly-evmconnect/Dockerfile.custom
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           platforms: linux/amd64
           provenance: false
-          tags: ghcr.io/${{ github.repository }}:${{ steps.build_tag_generator.outputs.BUILD_TAG }},ghcr.io/${{ github.repository }}:head
+          tags: ghcr.io/${{ steps.build_tag_generator.outputs.IMAGE_NAME }}:${{ steps.build_tag_generator.outputs.BUILD_TAG }},ghcr.io/${{ steps.build_tag_generator.outputs.IMAGE_NAME }}:head
           labels: |
             commit=${{ github.sha }}
             build_date=${{ steps.build_tag_generator.outputs.BUILD_DATE }}
             tag=${{ steps.build_tag_generator.outputs.BUILD_TAG }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
+          cache-from: type=registry,ref=ghcr.io/${{ steps.build_tag_generator.outputs.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ steps.build_tag_generator.outputs.IMAGE_NAME }}:buildcache,mode=max
           build-args: |
             BUILD_VERSION=${{ steps.build_tag_generator.outputs.BUILD_TAG }}
             GIT_REF=${{ github.ref }}
