@@ -91,4 +91,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/hyperledger-firefly/transaction-manager => ../firefly-transaction-manager
+replace github.com/hyperledger-firefly/transaction-manager => github.com/WebChainPros/transaction-manager v0.0.0-20260716083919-1324a2fa7abb
