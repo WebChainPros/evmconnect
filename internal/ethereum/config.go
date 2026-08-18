@@ -54,10 +54,10 @@ const (
 	MaxAsyncBlockFetchConcurrency = "maxAsyncBlockFetchConcurrency"
 	UseGetBlockReceipts           = "useGetBlockReceipts"
 
-	ConfigTxSignerEnabled         = "txSigner.enabled"
-	ConfigTxSignerType            = "txSigner.type"
-	ConfigTxSignerPrivateKeys     = "txSigner.privateKeys"
-	ConfigWeb3SignerURL           = "txSigner.web3signer.url"
+	ConfigTxSignerEnabled     = "txSigner.enabled"
+	ConfigTxSignerType        = "txSigner.type"
+	ConfigTxSignerPrivateKeys = "txSigner.privateKeys"
+	ConfigWeb3SignerURL       = "txSigner.web3signer.url"
 )
 
 const (

@@ -22,7 +22,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -77,7 +77,7 @@ func (s *Web3SignerClient) refreshPubKeyMap(ctx context.Context) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		bodyBytes, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("failed to fetch public keys from web3signer, status %d: %s", resp.StatusCode, string(bodyBytes))
 	}
 
@@ -111,27 +111,165 @@ func (s *Web3SignerClient) refreshPubKeyMap(ctx context.Context) error {
 	return nil
 }
 
-func (s *Web3SignerClient) SignTransaction(ctx context.Context, keyID string, txParamsJSON []byte) ([]byte, error) {
-	var pubKey string
+func (s *Web3SignerClient) getPublicKey(ctx context.Context, keyID string) (string, error) {
+	keyIDLower := strings.ToLower(keyID)
 	s.mux.Lock()
+	var pubKey string
 	if s.pubKeyMap != nil {
-		pubKey = s.pubKeyMap[strings.ToLower(keyID)]
+		pubKey = s.pubKeyMap[keyIDLower]
 	}
 	s.mux.Unlock()
 
 	if pubKey == "" {
 		if err := s.refreshPubKeyMap(ctx); err != nil {
-			return nil, fmt.Errorf("failed to refresh public key map from web3signer: %w", err)
+			return "", fmt.Errorf("failed to refresh public key map from web3signer: %w", err)
 		}
 		s.mux.Lock()
 		if s.pubKeyMap != nil {
-			pubKey = s.pubKeyMap[strings.ToLower(keyID)]
+			pubKey = s.pubKeyMap[keyIDLower]
 		}
 		s.mux.Unlock()
 	}
 
 	if pubKey == "" {
-		return nil, fmt.Errorf("address %s not found in Web3Signer loaded keys", keyID)
+		return "", fmt.Errorf("address %s not found in Web3Signer loaded keys", keyID)
+	}
+	return pubKey, nil
+}
+
+func (s *Web3SignerClient) getChainID(ctx context.Context) (int64, error) {
+	s.mux.Lock()
+	chainID := s.chainID
+	s.mux.Unlock()
+
+	if chainID != 0 {
+		return chainID, nil
+	}
+
+	readyRes, _, err := s.connector.IsReady(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to check connector readiness for chain ID: %w", err)
+	}
+	if readyRes == nil || readyRes.DownstreamDetails == nil {
+		return 0, fmt.Errorf("connector ready response returned no downstream details")
+	}
+	var details map[string]interface{}
+	if err := json.Unmarshal(readyRes.DownstreamDetails.Bytes(), &details); err != nil {
+		return 0, fmt.Errorf("failed to unmarshal downstream details: %w", err)
+	}
+	chainIDVal, ok := details["chainID"]
+	if !ok {
+		return 0, fmt.Errorf("chainID not found in downstream details")
+	}
+
+	switch v := chainIDVal.(type) {
+	case string:
+		if strings.HasPrefix(v, "0x") {
+			val, err := strconv.ParseInt(strings.TrimPrefix(v, "0x"), 16, 64)
+			if err != nil {
+				return 0, err
+			}
+			chainID = val
+		} else {
+			val, err := strconv.ParseInt(v, 10, 64)
+			if err != nil {
+				return 0, err
+			}
+			chainID = val
+		}
+	case float64:
+		chainID = int64(v)
+	default:
+		return 0, fmt.Errorf("unexpected chainID type: %T", chainIDVal)
+	}
+
+	s.mux.Lock()
+	s.chainID = chainID
+	s.mux.Unlock()
+	return chainID, nil
+}
+
+func parseGasPrices(params *signerTxParams) (gasPrice, maxPriorityFeePerGas, maxFeePerGas *ethtypes.HexInteger) {
+	if params.GasPrice == nil {
+		return nil, nil, nil
+	}
+	gasPriceObject := params.GasPrice.JSONObjectNowarn()
+	maxPriorityFee := gasPriceObject.GetInteger("maxPriorityFeePerGas")
+	maxFee := gasPriceObject.GetInteger("maxFeePerGas")
+	if (maxPriorityFee != nil && maxPriorityFee.Sign() > 0) || (maxFee != nil && maxFee.Sign() > 0) {
+		if maxPriorityFee != nil {
+			maxPriorityFeePerGas = (*ethtypes.HexInteger)(maxPriorityFee)
+		}
+		if maxFee != nil {
+			maxFeePerGas = (*ethtypes.HexInteger)(maxFee)
+		}
+		return nil, maxPriorityFeePerGas, maxFeePerGas
+	}
+
+	gp := gasPriceObject.GetInteger("gasPrice")
+	if gp != nil && gp.Sign() > 0 {
+		gasPrice = (*ethtypes.HexInteger)(gp)
+	} else {
+		var bi big.Int
+		if err := json.Unmarshal(params.GasPrice.Bytes(), &bi); err == nil {
+			gasPrice = (*ethtypes.HexInteger)(&bi)
+		}
+	}
+	return gasPrice, nil, nil
+}
+
+func (s *Web3SignerClient) requestSignature(ctx context.Context, pubKey string, signaturePayload []byte) (*secp256k1.SignatureData, error) {
+	apiURL := fmt.Sprintf("%s/api/v1/eth1/sign/%s", s.web3signerURL, pubKey)
+	reqPayload := &web3SignerRequest{
+		Data: "0x" + hex.EncodeToString(signaturePayload),
+	}
+	reqBytes, err := json.Marshal(reqPayload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal web3signer request: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", apiURL, bytes.NewReader(reqBytes))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create http request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request to Web3Signer: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("web3signer sign request failed with status code %d: %s", resp.StatusCode, string(bodyBytes))
+	}
+
+	respBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read web3signer response: %w", err)
+	}
+
+	sigHex := strings.TrimPrefix(strings.TrimSpace(string(respBytes)), "0x")
+	sigBytes, err := hex.DecodeString(sigHex)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode signature hex from web3signer response: %w", err)
+	}
+	if len(sigBytes) != 65 {
+		return nil, fmt.Errorf("invalid signature length received from web3signer (expected 65 bytes, got %d bytes)", len(sigBytes))
+	}
+
+	return &secp256k1.SignatureData{
+		V: new(big.Int).SetBytes([]byte{sigBytes[64]}),
+		R: new(big.Int).SetBytes(sigBytes[0:32]),
+		S: new(big.Int).SetBytes(sigBytes[32:64]),
+	}, nil
+}
+
+func (s *Web3SignerClient) SignTransaction(ctx context.Context, keyID string, txParamsJSON []byte) ([]byte, error) {
+	pubKey, err := s.getPublicKey(ctx, keyID)
+	if err != nil {
+		return nil, err
 	}
 
 	var params signerTxParams
@@ -156,76 +294,11 @@ func (s *Web3SignerClient) SignTransaction(ctx context.Context, keyID string, tx
 		return nil, fmt.Errorf("failed to decode data hex: %w", err)
 	}
 
-	var gasPrice, maxPriorityFeePerGas, maxFeePerGas *ethtypes.HexInteger
-	if params.GasPrice != nil {
-		gasPriceObject := params.GasPrice.JSONObjectNowarn()
-		maxPriorityFee := gasPriceObject.GetInteger("maxPriorityFeePerGas")
-		maxFee := gasPriceObject.GetInteger("maxFeePerGas")
-		if (maxPriorityFee != nil && maxPriorityFee.Sign() > 0) || (maxFee != nil && maxFee.Sign() > 0) {
-			if maxPriorityFee != nil {
-				maxPriorityFeePerGas = (*ethtypes.HexInteger)(maxPriorityFee)
-			}
-			if maxFee != nil {
-				maxFeePerGas = (*ethtypes.HexInteger)(maxFee)
-			}
-		} else {
-			gp := gasPriceObject.GetInteger("gasPrice")
-			if gp != nil && gp.Sign() > 0 {
-				gasPrice = (*ethtypes.HexInteger)(gp)
-			} else {
-				var bi big.Int
-				if err := json.Unmarshal(params.GasPrice.Bytes(), &bi); err == nil {
-					gasPrice = (*ethtypes.HexInteger)(&bi)
-				}
-			}
-		}
-	}
+	gasPrice, maxPriorityFeePerGas, maxFeePerGas := parseGasPrices(&params)
 
-	s.mux.Lock()
-	chainID := s.chainID
-	s.mux.Unlock()
-
-	if chainID == 0 {
-		readyRes, _, err := s.connector.IsReady(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("failed to check connector readiness for chain ID: %w", err)
-		}
-		if readyRes == nil || readyRes.DownstreamDetails == nil {
-			return nil, fmt.Errorf("connector ready response returned no downstream details")
-		}
-		var details map[string]interface{}
-		if err := json.Unmarshal(readyRes.DownstreamDetails.Bytes(), &details); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal downstream details: %w", err)
-		}
-		chainIDVal, ok := details["chainID"]
-		if !ok {
-			return nil, fmt.Errorf("chainID not found in downstream details")
-		}
-
-		switch v := chainIDVal.(type) {
-		case string:
-			if strings.HasPrefix(v, "0x") {
-				val, err := strconv.ParseInt(strings.TrimPrefix(v, "0x"), 16, 64)
-				if err != nil {
-					return nil, err
-				}
-				chainID = val
-			} else {
-				val, err := strconv.ParseInt(v, 10, 64)
-				if err != nil {
-					return nil, err
-				}
-				chainID = val
-			}
-		case float64:
-			chainID = int64(v)
-		default:
-			return nil, fmt.Errorf("unexpected chainID type: %T", chainIDVal)
-		}
-
-		s.mux.Lock()
-		s.chainID = chainID
-		s.mux.Unlock()
+	chainID, err := s.getChainID(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	tx := &ethsigner.Transaction{
@@ -241,51 +314,9 @@ func (s *Web3SignerClient) SignTransaction(ctx context.Context, keyID string, tx
 
 	signaturePayload := tx.SignaturePayload(chainID)
 
-	apiURL := fmt.Sprintf("%s/api/v1/eth1/sign/%s", s.web3signerURL, pubKey)
-	reqPayload := &web3SignerRequest{
-		Data: "0x" + hex.EncodeToString(signaturePayload.Bytes()),
-	}
-	reqBytes, err := json.Marshal(reqPayload)
+	sigData, err := s.requestSignature(ctx, pubKey, signaturePayload.Bytes())
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal web3signer request: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, "POST", apiURL, bytes.NewReader(reqBytes))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create http request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := s.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute HTTP request to Web3Signer: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("web3signer sign request failed with status code %d: %s", resp.StatusCode, string(bodyBytes))
-	}
-
-	respBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read web3signer response: %w", err)
-	}
-
-	sigHex := strings.TrimSpace(string(respBytes))
-	sigHex = strings.TrimPrefix(sigHex, "0x")
-	sigBytes, err := hex.DecodeString(sigHex)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode signature hex from web3signer response: %w", err)
-	}
-	if len(sigBytes) != 65 {
-		return nil, fmt.Errorf("invalid signature length received from web3signer (expected 65 bytes, got %d bytes)", len(sigBytes))
-	}
-
-	sigData := &secp256k1.SignatureData{
-		V: new(big.Int).SetBytes([]byte{sigBytes[64]}),
-		R: new(big.Int).SetBytes(sigBytes[0:32]),
-		S: new(big.Int).SetBytes(sigBytes[32:64]),
+		return nil, err
 	}
 
 	var signedTx []byte
