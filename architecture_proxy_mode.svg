@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 820" width="1100" height="820" font-family="'Segoe UI', Arial, sans-serif">
+  <!-- Background -->
+  <rect width="1100" height="820" fill="#0f1117" rx="16"/>
+
+  <!-- Title -->
+  <text x="550" y="36" text-anchor="middle" font-size="19" font-weight="bold" fill="#e2e8f0">🔀 프록시 모드 (Proxy Mode) — 기존 방식</text>
+  <text x="550" y="56" text-anchor="middle" font-size="12" fill="#64748b">txSigner.enabled = false | firefly-signer가 RPC 프록시로 eth_sendTransaction을 가로채 서명 후 Besu에 전달</text>
+
+  <defs>
+    <marker id="p-blue" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#3b82f6"/></marker>
+    <marker id="p-green" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#10b981"/></marker>
+    <marker id="p-purple" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#8b5cf6"/></marker>
+    <marker id="p-yellow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#eab308"/></marker>
+    <marker id="p-emerald" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#34d399"/></marker>
+  </defs>
+
+  <!-- === LANES === -->
+  <!-- FireFly Core -->
+  <rect x="18" y="76" width="140" height="700" fill="#1e2030" rx="10" stroke="#334155" stroke-width="1.5"/>
+  <rect x="18" y="76" width="140" height="36" fill="#1e40af" rx="10"/>
+  <rect x="18" y="101" width="140" height="11" fill="#1e40af"/>
+  <text x="88" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#bfdbfe">FireFly Core</text>
+
+  <!-- evmconnect -->
+  <rect x="176" y="76" width="178" height="700" fill="#0f1a10" rx="10" stroke="#334155" stroke-width="1.5"/>
+  <rect x="176" y="76" width="178" height="36" fill="#065f46" rx="10"/>
+  <rect x="176" y="101" width="178" height="11" fill="#065f46"/>
+  <text x="265" y="96" text-anchor="middle" font-size="12" font-weight="bold" fill="#6ee7b7">evmconnect</text>
+  <text x="265" y="110" text-anchor="middle" font-size="10" fill="#34d399">connector.url → firefly-signer</text>
+
+  <!-- transaction-manager -->
+  <rect x="372" y="76" width="185" height="700" fill="#0f0a1a" rx="10" stroke="#334155" stroke-width="1.5"/>
+  <rect x="372" y="76" width="185" height="36" fill="#4c1d95" rx="10"/>
+  <rect x="372" y="101" width="185" height="11" fill="#4c1d95"/>
+  <text x="464" y="96" text-anchor="middle" font-size="12" font-weight="bold" fill="#c4b5fd">transaction-manager</text>
+  <text x="464" y="110" text-anchor="middle" font-size="10" fill="#a78bfa">SimpleTransactionHandler</text>
+
+  <!-- firefly-signer (RPC Proxy) -->
+  <rect x="575" y="76" width="218" height="700" fill="#1f1a05" rx="10" stroke="#334155" stroke-width="1.5"/>
+  <rect x="575" y="76" width="218" height="36" fill="#78350f" rx="10"/>
+  <rect x="575" y="101" width="218" height="11" fill="#78350f"/>
+  <text x="684" y="96" text-anchor="middle" font-size="12" font-weight="bold" fill="#fde68a">firefly-signer</text>
+  <text x="684" y="110" text-anchor="middle" font-size="10" fill="#fbbf24">RPC Proxy (eth_sendTransaction 가로채기)</text>
+
+  <!-- Besu Node -->
+  <rect x="811" y="76" width="271" height="700" fill="#0a100a" rx="10" stroke="#334155" stroke-width="1.5"/>
+  <rect x="811" y="76" width="271" height="36" fill="#14532d" rx="10"/>
+  <rect x="811" y="101" width="271" height="11" fill="#14532d"/>
+  <text x="946" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#86efac">Besu Node (JSON-RPC)</text>
+  <text x="946" y="112" text-anchor="middle" font-size="10" fill="#4ade80">eth_sendRawTransaction 수신 → 채굴</text>
+
+  <!-- Phase label -->
+  <text x="550" y="133" text-anchor="middle" font-size="11" fill="#475569" font-style="italic">[ 트랜잭션 처리 흐름 ]</text>
+
+  <!-- STEP 1 -->
+  <rect x="26" y="145" width="124" height="52" fill="#1e40af" rx="8" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="88" y="164" text-anchor="middle" font-size="11" font-weight="bold" fill="#e0f2fe">① TX 요청</text>
+  <text x="88" y="178" text-anchor="middle" font-size="10" fill="#93c5fd">POST /transactions</text>
+  <text x="88" y="191" text-anchor="middle" font-size="10" fill="#60a5fa">from, to, data, value</text>
+  <line x1="150" y1="171" x2="172" y2="171" stroke="#3b82f6" stroke-width="2" marker-end="url(#p-blue)"/>
+
+  <!-- STEP 2 -->
+  <rect x="184" y="145" width="162" height="52" fill="#065f46" rx="8" stroke="#10b981" stroke-width="1.5"/>
+  <text x="265" y="164" text-anchor="middle" font-size="11" font-weight="bold" fill="#d1fae5">② FFTM Manager</text>
+  <text x="265" y="178" text-anchor="middle" font-size="10" fill="#6ee7b7">NewManager(ctx, connector)</text>
+  <text x="265" y="191" text-anchor="middle" font-size="10" fill="#34d399">Policy Loop 시작</text>
+  <line x1="346" y1="171" x2="368" y2="171" stroke="#10b981" stroke-width="2" marker-end="url(#p-green)"/>
+
+  <!-- STEP 3 -->
+  <rect x="380" y="145" width="169" height="52" fill="#3b0764" rx="8" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="464" y="164" text-anchor="middle" font-size="11" font-weight="bold" fill="#ede9fe">③ Nonce 할당</text>
+  <text x="464" y="178" text-anchor="middle" font-size="10" fill="#c4b5fd">NextNonceForSigner(from)</text>
+  <text x="464" y="191" text-anchor="middle" font-size="10" fill="#a78bfa">DB InsertTransaction</text>
+  <line x1="464" y1="197" x2="464" y2="218" stroke="#8b5cf6" stroke-width="2" marker-end="url(#p-purple)"/>
+
+  <!-- STEP 4 -->
+  <rect x="380" y="222" width="169" height="52" fill="#2d0050" rx="8" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="464" y="240" text-anchor="middle" font-size="11" font-weight="bold" fill="#ede9fe">④ 서명자 체크</text>
+  <text x="464" y="254" text-anchor="middle" font-size="10" fill="#c4b5fd">txSigner == nil</text>
+  <text x="464" y="266" text-anchor="middle" font-size="10" fill="#f87171">→ 기존 프록시 경로</text>
+  <line x1="464" y1="274" x2="464" y2="296" stroke="#8b5cf6" stroke-width="2" marker-end="url(#p-purple)"/>
+
+  <!-- STEP 5 -->
+  <rect x="380" y="300" width="169" height="62" fill="#3b0764" rx="8" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="464" y="318" text-anchor="middle" font-size="11" font-weight="bold" fill="#ede9fe">⑤ Connector 호출</text>
+  <text x="464" y="332" text-anchor="middle" font-size="10" fill="#c4b5fd">ffcapi.TransactionSend()</text>
+  <text x="464" y="345" text-anchor="middle" font-size="10" fill="#a78bfa">PreSigned = false</text>
+  <text x="464" y="358" text-anchor="middle" font-size="10" fill="#a78bfa">signedTxHex = ABI calldata</text>
+  <line x1="380" y1="331" x2="348" y2="331" stroke="#34d399" stroke-width="2" marker-end="url(#p-emerald)"/>
+
+  <!-- STEP 6: evmconnect buildTx -->
+  <rect x="184" y="300" width="162" height="62" fill="#065f46" rx="8" stroke="#10b981" stroke-width="1.5"/>
+  <text x="265" y="318" text-anchor="middle" font-size="11" font-weight="bold" fill="#d1fae5">⑥ TX 구성</text>
+  <text x="265" y="332" text-anchor="middle" font-size="10" fill="#6ee7b7">buildTx() + mapGasPrice()</text>
+  <text x="265" y="345" text-anchor="middle" font-size="10" fill="#34d399">ethsigner.Transaction 생성</text>
+  <text x="265" y="358" text-anchor="middle" font-size="10" fill="#34d399">(서명 없는 상태)</text>
+  <line x1="265" y1="362" x2="265" y2="385" stroke="#10b981" stroke-width="2" marker-end="url(#p-green)"/>
+
+  <!-- STEP 7: evmconnect → firefly-signer (eth_sendTransaction) -->
+  <rect x="184" y="389" width="162" height="52" fill="#065f46" rx="8" stroke="#10b981" stroke-width="1.5"/>
+  <text x="265" y="407" text-anchor="middle" font-size="11" font-weight="bold" fill="#d1fae5">⑦ eth_sendTransaction</text>
+  <text x="265" y="421" text-anchor="middle" font-size="10" fill="#6ee7b7">connector.url로 전송</text>
+  <text x="265" y="433" text-anchor="middle" font-size="10" fill="#34d399">→ firefly-signer 엔드포인트</text>
+  <!-- Arrow to firefly-signer -->
+  <line x1="346" y1="415" x2="571" y2="415" stroke="#eab308" stroke-width="2.5" marker-end="url(#p-yellow)"/>
+  <text x="458" y="408" text-anchor="middle" font-size="10" fill="#fbbf24">eth_sendTransaction (서명 없음)</text>
+
+  <!-- firefly-signer: 가로채기 박스 -->
+  <rect x="583" y="145" width="202" height="52" fill="#78350f" rx="8" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="684" y="163" text-anchor="middle" font-size="11" font-weight="bold" fill="#fef3c7">🔑 키 저장소</text>
+  <text x="684" y="177" text-anchor="middle" font-size="10" fill="#fde68a">Private Key 관리</text>
+  <text x="684" y="190" text-anchor="middle" font-size="10" fill="#fbbf24">(자체 키스토어)</text>
+
+  <!-- STEP 8: firefly-signer 가로채기 -->
+  <rect x="583" y="390" width="202" height="78" fill="#78350f" rx="8" stroke="#f59e0b" stroke-width="2"/>
+  <text x="684" y="408" text-anchor="middle" font-size="11" font-weight="bold" fill="#fef3c7">⑧ 요청 가로채기 &amp; 서명</text>
+  <text x="684" y="422" text-anchor="middle" font-size="10" fill="#fde68a">eth_sendTransaction 수신</text>
+  <text x="684" y="436" text-anchor="middle" font-size="10" fill="#fbbf24">→ secp256k1 EIP-155 서명</text>
+  <text x="684" y="450" text-anchor="middle" font-size="10" fill="#fbbf24">→ RLP 인코딩 (raw TX 완성)</text>
+  <text x="684" y="463" text-anchor="middle" font-size="10" fill="#fde68a">firefly-signer가 키로 직접 서명</text>
+
+  <!-- STEP 9: firefly-signer → Besu (eth_sendRawTransaction) -->
+  <rect x="583" y="488" width="202" height="52" fill="#78350f" rx="8" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="684" y="506" text-anchor="middle" font-size="11" font-weight="bold" fill="#fef3c7">⑨ Besu로 브로드캐스트</text>
+  <text x="684" y="520" text-anchor="middle" font-size="10" fill="#fde68a">eth_sendRawTransaction</text>
+  <text x="684" y="533" text-anchor="middle" font-size="10" fill="#fbbf24">(이미 서명된 raw TX 전달)</text>
+  <line x1="684" y1="468" x2="684" y2="484" stroke="#f59e0b" stroke-width="2" marker-end="url(#p-yellow)"/>
+  <!-- Arrow to Besu -->
+  <line x1="785" y1="514" x2="807" y2="514" stroke="#34d399" stroke-width="2.5" marker-end="url(#p-emerald)"/>
+  <text x="796" y="506" text-anchor="middle" font-size="9" fill="#4ade80">→</text>
+
+  <!-- txHash 반환 -->
+  <line x1="785" y1="429" x2="807" y2="429" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <!-- Actually, firefly-signer sends to Besu and gets txHash, then returns to evmconnect -->
+
+  <!-- Besu 처리 -->
+  <rect x="819" y="390" width="255" height="78" fill="#14532d" rx="8" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="946" y="408" text-anchor="middle" font-size="11" font-weight="bold" fill="#dcfce7">⑩ Raw TX 수신 &amp; 채굴</text>
+  <text x="946" y="422" text-anchor="middle" font-size="10" fill="#86efac">eth_sendRawTransaction 처리</text>
+  <text x="946" y="436" text-anchor="middle" font-size="10" fill="#4ade80">서명 검증 → mempool 수신</text>
+  <text x="946" y="450" text-anchor="middle" font-size="10" fill="#4ade80">P2P 전파 → txHash 반환</text>
+  <text x="946" y="463" text-anchor="middle" font-size="10" fill="#4ade80">EVM 실행 → 블록 포함</text>
+
+  <!-- txHash 경로: Besu → firefly-signer → evmconnect -->
+  <line x1="819" y1="425" x2="789" y2="425" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#p-yellow)"/>
+  <text x="804" y="418" text-anchor="middle" font-size="9" fill="#fbbf24">txHash</text>
+  <line x1="583" y1="430" x2="348" y2="430" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#p-green)"/>
+  <text x="465" y="423" text-anchor="middle" font-size="9" fill="#34d399">txHash 반환</text>
+
+  <!-- Besu Receipt -->
+  <rect x="819" y="490" width="255" height="52" fill="#166534" rx="8" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="946" y="508" text-anchor="middle" font-size="11" font-weight="bold" fill="#dcfce7">⑪ Receipt 생성</text>
+  <text x="946" y="522" text-anchor="middle" font-size="10" fill="#86efac">blockNumber, gasUsed, logs</text>
+  <text x="946" y="534" text-anchor="middle" font-size="10" fill="#4ade80">status=1 (성공)</text>
+  <line x1="946" y1="468" x2="946" y2="486" stroke="#22c55e" stroke-width="2" marker-end="url(#p-emerald)"/>
+
+  <!-- Receipt 폴링 -->
+  <rect x="380" y="580" width="169" height="52" fill="#3b0764" rx="8" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="464" y="598" text-anchor="middle" font-size="11" font-weight="bold" fill="#ede9fe">⑫ Receipt 폴링</text>
+  <text x="464" y="612" text-anchor="middle" font-size="10" fill="#c4b5fd">eth_getTransactionReceipt</text>
+  <text x="464" y="624" text-anchor="middle" font-size="10" fill="#a78bfa">블록 컨펌 대기</text>
+  <!-- Besu → TM receipt -->
+  <line x1="946" y1="542" x2="946" y2="606" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="946" y1="606" x2="553" y2="606" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#p-emerald)"/>
+  <text x="750" y="599" text-anchor="middle" font-size="9" fill="#4ade80">← receipt</text>
+
+  <!-- 이벤트 전달 -->
+  <rect x="184" y="580" width="162" height="52" fill="#065f46" rx="8" stroke="#10b981" stroke-width="1.5"/>
+  <text x="265" y="598" text-anchor="middle" font-size="11" font-weight="bold" fill="#d1fae5">⑬ 이벤트 전달</text>
+  <text x="265" y="612" text-anchor="middle" font-size="10" fill="#6ee7b7">TransactionSuccess</text>
+  <text x="265" y="624" text-anchor="middle" font-size="10" fill="#34d399">WebSocket Event</text>
+  <line x1="380" y1="606" x2="350" y2="606" stroke="#10b981" stroke-width="2" marker-end="url(#p-green)"/>
+
+  <!-- FireFly Core 완료 -->
+  <rect x="26" y="580" width="124" height="52" fill="#1e40af" rx="8" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="88" y="598" text-anchor="middle" font-size="11" font-weight="bold" fill="#e0f2fe">⑭ 완료 수신</text>
+  <text x="88" y="612" text-anchor="middle" font-size="10" fill="#93c5fd">Operation: Succeeded</text>
+  <text x="88" y="624" text-anchor="middle" font-size="10" fill="#60a5fa">txHash 저장</text>
+  <line x1="184" y1="606" x2="154" y2="606" stroke="#3b82f6" stroke-width="2" marker-end="url(#p-blue)"/>
+
+  <!-- KEY POINT BOX -->
+  <rect x="18" y="665" width="1064" height="100" fill="#0c0f1a" rx="8" stroke="#f59e0b" stroke-width="2"/>
+  <text x="550" y="684" text-anchor="middle" font-size="12" font-weight="bold" fill="#fbbf24">⚠️ 프록시 모드 핵심 포인트</text>
+  <line x1="28" y1="692" x2="1074" y2="692" stroke="#78350f" stroke-width="1"/>
+  <text x="550" y="709" text-anchor="middle" font-size="11" fill="#fed7aa"><tspan font-weight="bold" fill="#fbbf24">connector.url</tspan>을 <tspan font-weight="bold" fill="#fbbf24">Besu</tspan>가 아닌 <tspan font-weight="bold" fill="#fbbf24">firefly-signer</tspan>로 설정 → evmconnect가 모든 JSON-RPC 요청을 firefly-signer로 전송</text>
+  <text x="550" y="727" text-anchor="middle" font-size="11" fill="#fed7aa">firefly-signer가 <tspan font-weight="bold" fill="#fbbf24">eth_sendTransaction을 가로채</tspan> → 자체 키로 서명 → <tspan font-weight="bold" fill="#fbbf24">eth_sendRawTransaction</tspan>으로 Besu에 전달</text>
+  <text x="550" y="745" text-anchor="middle" font-size="11" fill="#fed7aa">evmconnect/transaction-manager 입장에서는 단순히 <tspan font-weight="bold" fill="#fbbf24">eth_sendTransaction</tspan>만 호출 — 서명은 중간 프록시(firefly-signer)가 처리</text>
+  <text x="550" y="760" text-anchor="middle" font-size="10" fill="#94a3b8">* 실제 키 관리: firefly-signer 내부 (파일 기반 키스토어, AWS KMS, Azure Key Vault 등)</text>
+</svg>

@@ -1,0 +1,255 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 860" width="1060" height="860" font-family="'Segoe UI', Arial, sans-serif">
+  <!-- Background -->
+  <rect width="1060" height="860" fill="#0f1117" rx="16"/>
+
+  <!-- Title -->
+  <text x="530" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="#e2e8f0">🔐 서명기 모드 (Signer Mode) — 커스텀 추가 방식</text>
+  <text x="530" y="60" text-anchor="middle" font-size="12" fill="#64748b">txSigner.enabled = true | evmconnect 내부 서명 (memory / web3signer)</text>
+
+  <!-- LANE Headers -->
+  <!-- FireFly Core -->
+  <rect x="20" y="80" width="145" height="730" fill="#1e2030" rx="10" stroke="#334155" stroke-width="1.5"/>
+  <rect x="20" y="80" width="145" height="36" fill="#1e40af" rx="10"/>
+  <rect x="20" y="106" width="145" height="10" fill="#1e40af"/>
+  <text x="92" y="104" text-anchor="middle" font-size="12" font-weight="bold" fill="#bfdbfe">FireFly Core</text>
+
+  <!-- evmconnect -->
+  <rect x="183" y="80" width="185" height="730" fill="#0f1a10" rx="10" stroke="#334155" stroke-width="1.5"/>
+  <rect x="183" y="80" width="185" height="36" fill="#065f46" rx="10"/>
+  <rect x="183" y="106" width="185" height="10" fill="#065f46"/>
+  <text x="275" y="98" text-anchor="middle" font-size="12" font-weight="bold" fill="#6ee7b7">evmconnect</text>
+  <text x="275" y="112" text-anchor="middle" font-size="10" fill="#34d399">cmd/evmconnect.go</text>
+
+  <!-- txsigner pkg -->
+  <rect x="386" y="80" width="175" height="730" fill="#0a1020" rx="10" stroke="#334155" stroke-width="1.5"/>
+  <rect x="386" y="80" width="175" height="36" fill="#164e63" rx="10"/>
+  <rect x="386" y="106" width="175" height="10" fill="#164e63"/>
+  <text x="473" y="98" text-anchor="middle" font-size="12" font-weight="bold" fill="#67e8f9">pkg/txsigner</text>
+  <text x="473" y="112" text-anchor="middle" font-size="10" fill="#22d3ee">서명 전담 패키지</text>
+
+  <!-- transaction-manager -->
+  <rect x="579" y="80" width="195" height="730" fill="#0f0a1a" rx="10" stroke="#334155" stroke-width="1.5"/>
+  <rect x="579" y="80" width="195" height="36" fill="#4c1d95" rx="10"/>
+  <rect x="579" y="106" width="195" height="10" fill="#4c1d95"/>
+  <text x="676" y="98" text-anchor="middle" font-size="12" font-weight="bold" fill="#c4b5fd">transaction-manager</text>
+  <text x="676" y="112" text-anchor="middle" font-size="10" fill="#a78bfa">SimpleTransactionHandler</text>
+
+  <!-- Blockchain -->
+  <rect x="792" y="80" width="248" height="730" fill="#0a100a" rx="10" stroke="#334155" stroke-width="1.5"/>
+  <rect x="792" y="80" width="248" height="36" fill="#14532d" rx="10"/>
+  <rect x="792" y="106" width="248" height="10" fill="#14532d"/>
+  <text x="916" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#86efac">Blockchain (Besu)</text>
+  <text x="916" y="113" text-anchor="middle" font-size="10" fill="#4ade80">JSON-RPC / EVM</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="s-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6"/></marker>
+    <marker id="s-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/></marker>
+    <marker id="s-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#06b6d4"/></marker>
+    <marker id="s-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#8b5cf6"/></marker>
+    <marker id="s-emerald" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/></marker>
+    <marker id="s-yellow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b"/></marker>
+    <marker id="s-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#f97316"/></marker>
+  </defs>
+
+  <!-- ===== INIT PHASE ===== -->
+  <text x="530" y="148" text-anchor="middle" font-size="11" fill="#475569" font-style="italic">[ 초기화 단계 ]</text>
+
+  <!-- Step 1: 설정 로드 -->
+  <rect x="193" y="155" width="165" height="50" fill="#065f46" rx="8" stroke="#10b981" stroke-width="1.5"/>
+  <text x="275" y="173" text-anchor="middle" font-size="11" font-weight="bold" fill="#d1fae5">① 설정 파일 로드</text>
+  <text x="275" y="187" text-anchor="middle" font-size="10" fill="#6ee7b7">txSigner.enabled: true</text>
+  <text x="275" y="199" text-anchor="middle" font-size="10" fill="#34d399">type: memory | web3signer</text>
+
+  <!-- Step 2: 분기 (메모리 or Web3Signer) -->
+  <!-- memory branch label -->
+  <rect x="396" y="155" width="155" height="110" fill="#0c2a38" rx="8" stroke="#06b6d4" stroke-width="1.5"/>
+  <text x="473" y="173" text-anchor="middle" font-size="11" font-weight="bold" fill="#cffafe">② 서명자 초기화</text>
+  <!-- type=memory -->
+  <rect x="406" y="183" width="135" height="36" fill="#155e75" rx="6" stroke="#0891b2" stroke-width="1"/>
+  <text x="473" y="196" text-anchor="middle" font-size="10" font-weight="bold" fill="#a5f3fc">type = memory</text>
+  <text x="473" y="210" text-anchor="middle" font-size="9" fill="#67e8f9">EthMemorySigner 생성</text>
+  <!-- type=web3signer -->
+  <rect x="406" y="225" width="135" height="32" fill="#0e4158" rx="6" stroke="#0369a1" stroke-width="1"/>
+  <text x="473" y="237" text-anchor="middle" font-size="10" font-weight="bold" fill="#bae6fd">type = web3signer</text>
+  <text x="473" y="250" text-anchor="middle" font-size="9" fill="#93c5fd">Web3SignerClient 생성</text>
+
+  <!-- Arrow: evmconnect → txsigner init -->
+  <line x1="358" y1="200" x2="382" y2="200" stroke="#06b6d4" stroke-width="2" marker-end="url(#s-cyan)"/>
+
+  <!-- Step 3: NewManagerWithSigner -->
+  <rect x="589" y="155" width="175" height="50" fill="#4c1d95" rx="8" stroke="#8b5cf6" stroke-width="1.5"/>
+  <text x="676" y="173" text-anchor="middle" font-size="11" font-weight="bold" fill="#ede9fe">③ Manager 생성</text>
+  <text x="676" y="187" text-anchor="middle" font-size="10" fill="#c4b5fd">NewManagerWithSigner()</text>
+  <text x="676" y="199" text-anchor="middle" font-size="10" fill="#a78bfa">Toolkit.TransactionSigner 주입</text>
+
+  <!-- Arrow: evmconnect → TM init -->
+  <line x1="358" y1="175" x2="585" y2="175" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#s-purple)"/>
+  <text x="472" y="168" text-anchor="middle" font-size="9" fill="#a78bfa">txSigner 주입</text>
+
+  <!-- ===== TRANSACTION PHASE ===== -->
+  <line x1="20" y1="290" x2="1040" y2="290" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <text x="530" y="308" text-anchor="middle" font-size="11" fill="#475569" font-style="italic">[ 트랜잭션 처리 단계 ]</text>
+
+  <!-- Step 4: FireFly Core 요청 -->
+  <rect x="30" y="316" width="125" height="50" fill="#1e40af" rx="8" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="92" y="334" text-anchor="middle" font-size="11" font-weight="bold" fill="#e0f2fe">④ TX 요청</text>
+  <text x="92" y="348" text-anchor="middle" font-size="10" fill="#93c5fd">POST /transactions</text>
+  <text x="92" y="360" text-anchor="middle" font-size="10" fill="#60a5fa">from, to, data, value</text>
+
+  <line x1="155" y1="341" x2="179" y2="341" stroke="#3b82f6" stroke-width="2" marker-end="url(#s-blue)"/>
+
+  <!-- Step 5: FFTM Manager 수신 -->
+  <rect x="193" y="316" width="165" height="50" fill="#065f46" rx="8" stroke="#10b981" stroke-width="1.5"/>
+  <text x="275" y="334" text-anchor="middle" font-size="11" font-weight="bold" fill="#d1fae5">⑤ Manager 수신</text>
+  <text x="275" y="348" text-anchor="middle" font-size="10" fill="#6ee7b7">SendTransaction 요청</text>
+  <text x="275" y="360" text-anchor="middle" font-size="10" fill="#34d399">TM Policy Loop 진입</text>
+
+  <line x1="358" y1="341" x2="575" y2="341" stroke="#8b5cf6" stroke-width="2" marker-end="url(#s-purple)"/>
+
+  <!-- Step 6: SimpleHandler - Nonce -->
+  <rect x="589" y="316" width="175" height="50" fill="#3b0764" rx="8" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="676" y="334" text-anchor="middle" font-size="11" font-weight="bold" fill="#ede9fe">⑥ Nonce 할당</text>
+  <text x="676" y="348" text-anchor="middle" font-size="10" fill="#c4b5fd">NextNonceForSigner(from)</text>
+  <text x="676" y="360" text-anchor="middle" font-size="10" fill="#a78bfa">DB InsertTransaction</text>
+
+  <line x1="676" y1="366" x2="676" y2="393" stroke="#8b5cf6" stroke-width="2" marker-end="url(#s-purple)"/>
+
+  <!-- Step 7: SimpleHandler - 서명 판단 -->
+  <!-- Diamond decision -->
+  <polygon points="676,400 730,430 676,460 622,430" fill="#1e0a38" stroke="#c084fc" stroke-width="2"/>
+  <text x="676" y="427" text-anchor="middle" font-size="10" font-weight="bold" fill="#e9d5ff">TransactionSigner</text>
+  <text x="676" y="442" text-anchor="middle" font-size="10" fill="#d8b4fe">!= nil ?</text>
+
+  <!-- YES branch (→ txsigner) -->
+  <line x1="730" y1="430" x2="780" y2="430" stroke="#c084fc" stroke-width="2"/>
+  <text x="755" y="422" text-anchor="middle" font-size="10" fill="#c084fc">No</text>
+  <!-- NO fallback note -->
+  <rect x="784" y="412" width="172" height="40" fill="#1a0a30" rx="6" stroke="#6b21a8" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="870" y="428" text-anchor="middle" font-size="10" fill="#a855f7">기존 방식 (프록시 모드)</text>
+  <text x="870" y="442" text-anchor="middle" font-size="9" fill="#7e22ce">firefly-signer에 위임</text>
+
+  <!-- YES path down -->
+  <line x1="676" y1="460" x2="676" y2="487" stroke="#c084fc" stroke-width="2" marker-end="url(#s-purple)"/>
+  <text x="650" y="478" text-anchor="middle" font-size="10" fill="#c084fc">Yes</text>
+
+  <!-- ===== SIGNING SUB-FLOW ===== -->
+  <line x1="386" y1="490" x2="770" y2="490" stroke="#1e293b" stroke-width="1" stroke-dasharray="2,2"/>
+
+  <!-- Step 8: txParams 구성 -->
+  <rect x="589" y="495" width="175" height="60" fill="#3b0764" rx="8" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="676" y="513" text-anchor="middle" font-size="11" font-weight="bold" fill="#ede9fe">⑧ 서명 파라미터 구성</text>
+  <text x="676" y="527" text-anchor="middle" font-size="10" fill="#c4b5fd">signerTxParams{</text>
+  <text x="676" y="540" text-anchor="middle" font-size="9" fill="#a78bfa">signer, nonce, gas, to, value, data}</text>
+
+  <line x1="676" y1="555" x2="676" y2="578" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- Arrow: TM → txsigner (call) -->
+  <line x1="582" y1="525" x2="558" y2="525" stroke="#06b6d4" stroke-width="2.5" marker-end="url(#s-cyan)"/>
+  <text x="570" y="518" text-anchor="middle" font-size="9" fill="#22d3ee">SignTransaction()</text>
+
+  <!-- Step 9: txsigner 서명 처리 -->
+  <rect x="396" y="495" width="155" height="130" fill="#0c2a38" rx="8" stroke="#06b6d4" stroke-width="2"/>
+  <text x="473" y="513" text-anchor="middle" font-size="11" font-weight="bold" fill="#cffafe">⑨ 서명 수행</text>
+  <!-- memory path -->
+  <rect x="406" y="522" width="135" height="45" fill="#155e75" rx="6" stroke="#0891b2" stroke-width="1.5"/>
+  <text x="473" y="536" text-anchor="middle" font-size="10" font-weight="bold" fill="#a5f3fc">🔑 메모리 서명자</text>
+  <text x="473" y="549" text-anchor="middle" font-size="9" fill="#67e8f9">메모리 개인키 로드</text>
+  <text x="473" y="562" text-anchor="middle" font-size="9" fill="#22d3ee">secp256k1.Sign()</text>
+  <!-- web3signer path -->
+  <rect x="406" y="573" width="135" height="45" fill="#0e4158" rx="6" stroke="#0369a1" stroke-width="1.5"/>
+  <text x="473" y="587" text-anchor="middle" font-size="10" font-weight="bold" fill="#bae6fd">🌐 Web3Signer</text>
+  <text x="473" y="600" text-anchor="middle" font-size="9" fill="#93c5fd">POST /eth1/sign/{pubkey}</text>
+  <text x="473" y="612" text-anchor="middle" font-size="9" fill="#60a5fa">HTTP REST API 호출</text>
+
+  <!-- Common signing output -->
+  <rect x="406" y="624" width="135" height="28" fill="#0a3040" rx="6" stroke="#0e7490" stroke-width="1"/>
+  <text x="473" y="636" text-anchor="middle" font-size="10" font-weight="bold" fill="#cffafe">EIP-155 서명</text>
+  <text x="473" y="647" text-anchor="middle" font-size="9" fill="#67e8f9">RLP 인코딩 → raw bytes</text>
+
+  <!-- Arrow: txsigner → TM (response) -->
+  <line x1="558" y1="620" x2="582" y2="620" stroke="#06b6d4" stroke-width="2.5" marker-end="url(#s-cyan)"/>
+  <text x="570" y="612" text-anchor="middle" font-size="9" fill="#22d3ee">signedTxBytes</text>
+
+  <!-- Step 10: TM - 해시 계산 및 전송 준비 -->
+  <rect x="589" y="585" width="175" height="65" fill="#3b0764" rx="8" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="676" y="603" text-anchor="middle" font-size="11" font-weight="bold" fill="#ede9fe">⑩ 전송 준비</text>
+  <text x="676" y="617" text-anchor="middle" font-size="10" fill="#c4b5fd">signedTxHex = "0x" + hex</text>
+  <text x="676" y="630" text-anchor="middle" font-size="10" fill="#a78bfa">calcTxHash = keccak256(bytes)</text>
+  <text x="676" y="643" text-anchor="middle" font-size="10" fill="#c084fc">PreSigned = true ✓</text>
+
+  <line x1="676" y1="648" x2="676" y2="670" stroke="#8b5cf6" stroke-width="2" marker-end="url(#s-purple)"/>
+
+  <!-- Step 11: eth_sendRawTransaction -->
+  <rect x="589" y="674" width="175" height="50" fill="#3b0764" rx="8" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="676" y="692" text-anchor="middle" font-size="11" font-weight="bold" fill="#ede9fe">⑪ Raw TX 전송</text>
+  <text x="676" y="706" text-anchor="middle" font-size="10" fill="#c4b5fd">eth_sendRawTransaction</text>
+  <text x="676" y="718" text-anchor="middle" font-size="10" fill="#a78bfa">PreSigned=true → 직접 브로드캐스트</text>
+
+  <!-- Arrow: TM → Blockchain -->
+  <line x1="764" y1="699" x2="788" y2="699" stroke="#4ade80" stroke-width="2.5" marker-end="url(#s-emerald)"/>
+
+  <!-- Step 12: Blockchain 처리 -->
+  <rect x="802" y="674" width="228" height="50" fill="#14532d" rx="8" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="916" y="692" text-anchor="middle" font-size="11" font-weight="bold" fill="#dcfce7">⑫ 트랜잭션 채굴</text>
+  <text x="916" y="706" text-anchor="middle" font-size="10" fill="#86efac">Besu mempool 수신</text>
+  <text x="916" y="718" text-anchor="middle" font-size="10" fill="#4ade80">EVM 실행 → Block 포함</text>
+
+  <!-- Receipt path back -->
+  <rect x="802" y="600" width="228" height="60" fill="#166534" rx="8" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="916" y="618" text-anchor="middle" font-size="11" font-weight="bold" fill="#dcfce7">⑬ Receipt 생성</text>
+  <text x="916" y="632" text-anchor="middle" font-size="10" fill="#86efac">txHash, blockNumber</text>
+  <text x="916" y="645" text-anchor="middle" font-size="10" fill="#4ade80">gasUsed, status: 1(success)</text>
+  <text x="916" y="657" text-anchor="middle" font-size="10" fill="#4ade80">logs, events</text>
+  <line x1="916" y1="674" x2="916" y2="664" stroke="#22c55e" stroke-width="2" marker-end="url(#s-emerald)"/>
+  <line x1="802" y1="630" x2="768" y2="630" stroke="#22c55e" stroke-width="2" marker-end="url(#s-emerald)"/>
+
+  <!-- Step 14: TM Receipt handling -->
+  <rect x="589" y="495" width="0" height="0"/> <!-- placeholder -->
+  <!-- Receipt confirmed event -->
+  <rect x="193" y="724" width="165" height="50" fill="#065f46" rx="8" stroke="#10b981" stroke-width="1.5"/>
+  <text x="275" y="742" text-anchor="middle" font-size="11" font-weight="bold" fill="#d1fae5">⑭ 이벤트 알림</text>
+  <text x="275" y="756" text-anchor="middle" font-size="10" fill="#6ee7b7">TransactionSuccess 이벤트</text>
+  <text x="275" y="768" text-anchor="middle" font-size="10" fill="#34d399">WebSocket → FireFly Core</text>
+
+  <line x1="589" y1="630" x2="362" y2="748" stroke="#10b981" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#s-green)"/>
+
+  <rect x="30" y="724" width="125" height="50" fill="#1e40af" rx="8" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="92" y="742" text-anchor="middle" font-size="11" font-weight="bold" fill="#e0f2fe">⑮ 완료 수신</text>
+  <text x="92" y="756" text-anchor="middle" font-size="10" fill="#93c5fd">Operation: Succeeded</text>
+  <text x="92" y="768" text-anchor="middle" font-size="10" fill="#60a5fa">txHash 기록</text>
+  <line x1="193" y1="749" x2="159" y2="749" stroke="#3b82f6" stroke-width="2" marker-end="url(#s-blue)"/>
+
+  <!-- BENEFIT BOX (상단 이동) -->
+  <rect x="802" y="135" width="228" height="235" fill="#0a1a0a" rx="8" stroke="#22c55e" stroke-width="2"/>
+  <text x="916" y="155" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ade80">✅ 서명기 모드 장점</text>
+  <line x1="810" y1="164" x2="1022" y2="164" stroke="#166534" stroke-width="1"/>
+  <text x="916" y="180" text-anchor="middle" font-size="11" font-weight="bold" fill="#86efac">🚀 성능 향상</text>
+  <text x="916" y="195" text-anchor="middle" font-size="10" fill="#a7f3d0">• 네트워크 홉 제거 (서명 인라인)</text>
+  <text x="916" y="209" text-anchor="middle" font-size="10" fill="#a7f3d0">• 서명 레이턴시 최소화</text>
+  <line x1="810" y1="217" x2="1022" y2="217" stroke="#166534" stroke-width="1"/>
+  <text x="916" y="233" text-anchor="middle" font-size="11" font-weight="bold" fill="#86efac">🛡️ 운영 단순화</text>
+  <text x="916" y="247" text-anchor="middle" font-size="10" fill="#a7f3d0">• firefly-signer 프로세스 불필요</text>
+  <text x="916" y="261" text-anchor="middle" font-size="10" fill="#a7f3d0">• 장애 포인트 감소 / 배포 단순화</text>
+  <line x1="810" y1="269" x2="1022" y2="269" stroke="#166534" stroke-width="1"/>
+  <text x="916" y="285" text-anchor="middle" font-size="11" font-weight="bold" fill="#86efac">🔑 유연한 키 관리 &amp; 호환성</text>
+  <text x="916" y="299" text-anchor="middle" font-size="10" fill="#a7f3d0">• memory (개인키) / web3signer (HSM)</text>
+  <text x="916" y="313" text-anchor="middle" font-size="10" fill="#a7f3d0">• enabled=false 시 기존 프록시 동작</text>
+  <text x="916" y="327" text-anchor="middle" font-size="10" fill="#a7f3d0">• NewManager() API 하위 호환 유지</text>
+
+  <!-- Legend -->
+  <rect x="20" y="800" width="770" height="44" fill="#0d1117" rx="8" stroke="#1e293b" stroke-width="1"/>
+  <text x="395" y="816" text-anchor="middle" font-size="11" font-weight="bold" fill="#64748b">[ 범례 ]</text>
+  <line x1="35" y1="830" x2="70" y2="830" stroke="#3b82f6" stroke-width="2"/>
+  <text x="75" y="834" font-size="10" fill="#93c5fd">FireFly Core</text>
+  <line x1="155" y1="830" x2="190" y2="830" stroke="#10b981" stroke-width="2"/>
+  <text x="195" y="834" font-size="10" fill="#6ee7b7">evmconnect</text>
+  <line x1="270" y1="830" x2="305" y2="830" stroke="#06b6d4" stroke-width="2"/>
+  <text x="310" y="834" font-size="10" fill="#67e8f9">txsigner 패키지</text>
+  <line x1="400" y1="830" x2="435" y2="830" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="440" y="834" font-size="10" fill="#c4b5fd">transaction-manager</text>
+  <line x1="570" y1="830" x2="605" y2="830" stroke="#22c55e" stroke-width="2"/>
+  <text x="610" y="834" font-size="10" fill="#86efac">Blockchain (Besu)</text>
+  <line x1="700" y1="830" x2="735" y2="830" stroke="#06b6d4" stroke-width="2" stroke-dasharray="4,2"/>
+  <text x="740" y="834" font-size="10" fill="#67e8f9">서명 요청/응답</text>
+</svg>
